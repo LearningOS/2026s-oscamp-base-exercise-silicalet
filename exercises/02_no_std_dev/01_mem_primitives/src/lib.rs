@@ -27,7 +27,18 @@
 pub unsafe extern "C" fn my_memcpy(dst: *mut u8, src: *const u8, n: usize) -> *mut u8 {
     // TODO: Implement memcpy
     // Hint: read bytes from src one by one and write to dst
-    todo!()
+    // todo!()
+    if n == 0 {
+        return dst;
+    }
+
+    let mut i = 0;
+    while i < n {
+        *dst.add(i) = *src.add(i);
+        i += 1;
+    }
+
+    dst
 }
 
 /// Set `n` bytes starting at `dst` to the value `c`.
@@ -39,7 +50,11 @@ pub unsafe extern "C" fn my_memcpy(dst: *mut u8, src: *const u8, n: usize) -> *m
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn my_memset(dst: *mut u8, c: u8, n: usize) -> *mut u8 {
     // TODO: Implement memset
-    todo!()
+    // todo!()
+    for i in 0..n {
+        *dst.add(i) = c;
+    }
+    dst
 }
 
 /// Copy `n` bytes from `src` to `dst`, correctly handling overlapping memory.
@@ -52,7 +67,29 @@ pub unsafe extern "C" fn my_memset(dst: *mut u8, c: u8, n: usize) -> *mut u8 {
 pub unsafe extern "C" fn my_memmove(dst: *mut u8, src: *const u8, n: usize) -> *mut u8 {
     // TODO: Implement memmove
     // Hint: when dst > src and regions overlap, copy backwards (from end to start)
-    todo!()
+    // todo!()
+    if n == 0 {
+        return dst;
+    }
+
+    // Check if regions overlap and dst > src
+    if dst > src as *mut u8 && (src as usize) + n > dst as usize {
+        // Copy backwards to avoid corruption
+        let mut i = n;
+        while i > 0 {
+            i -= 1;
+            *dst.add(i) = *src.add(i);
+        }
+    } else {
+        // Copy forwards (same as memcpy)
+        let mut i = 0;
+        while i < n {
+            *dst.add(i) = *src.add(i);
+            i += 1;
+        }
+    }
+
+    dst
 }
 
 /// Return the length of a null-terminated byte string, excluding the trailing null.
@@ -62,7 +99,14 @@ pub unsafe extern "C" fn my_memmove(dst: *mut u8, src: *const u8, n: usize) -> *
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn my_strlen(s: *const u8) -> usize {
     // TODO: Implement strlen
-    todo!()
+    // todo!()
+    let mut len = 0;
+    let mut ptr = s;
+    while *ptr != b'\0' {
+        len += 1;
+        ptr = ptr.add(1);
+    }
+    len
 }
 
 /// Compare two null-terminated byte strings.
@@ -77,7 +121,20 @@ pub unsafe extern "C" fn my_strlen(s: *const u8) -> usize {
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn my_strcmp(s1: *const u8, s2: *const u8) -> i32 {
     // TODO: Implement strcmp
-    todo!()
+    // todo!()
+    // assert_eq!(my_strlen(s1), my_strlen(s2));
+    // for i in 0..my_strlen(s1) {
+
+    // }
+    let mut i = 0;
+    loop {
+        let c1 = *s1.add(i);
+        let c2 = *s2.add(i);
+        if c1 != c2 || c1 == b'\0' {
+            return (c1 as i32) - (c2 as i32);
+        }
+        i += 1;
+    }
 }
 
 // ============================================================
