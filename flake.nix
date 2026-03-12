@@ -29,6 +29,7 @@
               qemu
               cargo-binutils
               devcontainer
+              gh
             ];
 
             shellHook = ''
