@@ -33,7 +33,14 @@ impl Future for CountDown {
     type Output = &'static str;
 
     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
-        todo!()
+        if self.count == 0 {
+            return core::task::Poll::Ready("liftoff!");
+        } else {
+            self.get_mut().count -= 1; // 为什么用pin
+            cx.waker().wake_by_ref();
+            return core::task::Poll::Pending;
+        }
+        // todo!()
     }
 }
 
@@ -57,7 +64,15 @@ impl Future for YieldOnce {
     type Output = ();
 
     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
-        todo!()
+        if self.yielded {
+            // second
+            return core::task::Poll::Ready(());
+        } else {
+            self.get_mut().yielded = true;
+            cx.waker().wake_by_ref();
+            return core::task::Poll::Pending;
+        }
+        // todo!()
     }
 }
 
